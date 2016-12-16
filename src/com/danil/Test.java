@@ -17,7 +17,7 @@ public class Test {
         B = inputValidator();
         System.out.println("P(x;y):");
         P = inputValidator();
-
+        Test test = new Test();
         double AB = Math.sqrt((B[x] - A[x])*(B[x] - A[x]) + (B[y]-A[y])*(B[y]-A[y]));
         if(AB == 0){ // A and B have the same coordinates
             double minimum = Math.sqrt((P[x]-A[x])*(P[x]-A[x]) + (P[y]-A[y])*(P[y]-A[y]));
@@ -25,11 +25,11 @@ public class Test {
             return;
         }
 
-        System.out.println("Minimum distance between P and AB = " + getMinimumDistance(A,B,P));
+        System.out.println("Minimum distance between P and AB = " + test.getMinimumDistance(A,B,P));
     }
 
 
-    static double getMinimumDistance(double[] A, double[] B, double[] P) {
+    private double getMinimumDistance(double[] A, double[] B, double[] P) {
         double middleOfAxBx = (A[x] + B[x]) / 2; // точка х середины отрезка AB
         double averageAxBx = Math.abs((A[x] - B[x]) / 2); // длина от точки Ax или Bx до середины проекции отрезка AB на x
         double distancePx = Math.abs(P[x] - middleOfAxBx); // длина от Px до середины проекции отрека AB на x
@@ -47,43 +47,16 @@ public class Test {
             if (s != 0)
                 return 2 * s / p; // высота опущенная с точки P на AB
         }
-        // смотрим, где лежит точка P по оси x
-        // если левее от AB, то ищем крайнюю левую точку и считаем расстояние между P и этой точкой
-        // точно так же, если правее
+
+        // если все точки лежат на одной прямой, но P не лежит на AB
         if (A[x] != 0 && B[x] != 0) {
-            double[] leftPoint;
-            double[] rightPoint;
-            if (A[x] <= B[x]) {
-                leftPoint = A;
-                rightPoint = B;
-            } else {
-                leftPoint = B;
-                rightPoint = A;
-            }
-
-            if (P[x] < leftPoint[x])
-                return length(P, leftPoint);
-            else
-                return length(P, rightPoint);
+            return allPointsOnTheSameLine(x,A,B,P);
         }
-        // если точка P лежит на одной 
-            double[] highPoint;
-            double[] lowPoint;
-            if (A[y] >= B[y]) {
-                highPoint = A;
-                lowPoint = B;
-            } else {
-                highPoint = B;
-                lowPoint = A;
-            }
 
-            if (P[y] < highPoint[y])
-                return length(P, highPoint);
-            else
-                return length(P, lowPoint);
+        return allPointsOnTheSameLine(y,A,B,P);
     }
 
-    static boolean isOnTheAB(double[] A, double[] B, double[] P){
+    private boolean isOnTheAB(double[] A, double[] B, double[] P){
         double[] ABVector = new double[2];
         double[] APVector = new double[2];
         double xMin, xMax, yMin, yMax;
@@ -110,12 +83,29 @@ public class Test {
         return isCollinear && isOnTheSameSegment; //если вектора коллинеарны и точка
     }
 
-    static double length(double[] D, double[] C){
+    private double allPointsOnTheSameLine(int axis, double[] A, double[] B, double[] P){
+        double[] maxPoint;
+        double[] minPoint;
+        if (A[axis] >= B[axis]) {
+            maxPoint = A;
+            minPoint = B;
+        } else {
+            maxPoint = B;
+            minPoint = A;
+        }
+
+        if (P[axis] > maxPoint[axis])
+            return length(P, maxPoint);
+        else
+            return length(P, minPoint);
+    }
+
+    private double length(double[] D, double[] C){
         return Math.sqrt((D[x]-C[x])*(D[x]-C[x]) + (D[y]-C[y])*(D[y]-C[y]));
     }
 
 
-    static double[] inputValidator(){
+    public static double[] inputValidator(){
         double[] arr = new double[2]; // somePoint(x,y)
         Scanner scanner = new Scanner(System.in);
         String wrongInput;
