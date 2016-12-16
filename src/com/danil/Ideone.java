@@ -1,11 +1,10 @@
-package com.danil;
+/* package whatever; // don't place package name! */
 
+import java.lang.*;
+import java.io.*;
 
-import java.io.IOException;
-import java.util.Scanner;
-
-
-public class Test {
+/* Name of the class has to be "Main" only if the class is public. */
+public class Ideone {
 
     private static final int x = 0, y = 1;
 
@@ -17,10 +16,10 @@ public class Test {
         B = inputValidator();
         System.out.println("P(x;y):");
         P = inputValidator();
-        Test test = new Test();
-        double AB = Math.sqrt((B[x] - A[x])*(B[x] - A[x]) + (B[y]-A[y])*(B[y]-A[y]));
+        Ideone test = new Ideone();
+        double AB = test.length(A,B);
         if(AB == 0){ // A and B have the same coordinates
-            double minimum = Math.sqrt((P[x]-A[x])*(P[x]-A[x]) + (P[y]-A[y])*(P[y]-A[y]));
+            double minimum = test.length(P,A);
             System.out.println("Minimum distance between P and AB = " + minimum);
             return;
         }
@@ -45,15 +44,16 @@ public class Test {
             double p = (AB + AP + PB) / 2; // полупериметр треугольника ABP
             double s = Math.sqrt(p * (p - AB) * (p - AP) * (p - PB)); // площадь треугольника ABP
             if (s != 0)
-                return 2 * s / p; // высота опущенная с точки P на AB
+                return 2 * s / AB   ; // высота опущенная с точки P на AB
         }
 
-        // если все точки лежат на одной прямой, но P не лежит на AB
-        if (A[x] != 0 && B[x] != 0) {
-            return allPointsOnTheSameLine(x,A,B,P);
-        }
+        // если точки лежат на одной прямой по оси Y
+        if(A[x] == B[x] && B[x] == P[x])
+            return findNearestPointToP(y,A,B,P);
+        // точки не лежат на одной прямой по оси Y, проверкой inRangeOfAb так же исключили, что точка P лежит в пределах отрезка AB по оси X
+        // определяем ближайшую точку к P через координаты по оси X и вычисляем расстояние между P и этой точкой
+        return findNearestPointToP(x,A,B,P);
 
-        return allPointsOnTheSameLine(y,A,B,P);
     }
 
     private boolean isOnTheAB(double[] A, double[] B, double[] P){
@@ -83,7 +83,7 @@ public class Test {
         return isCollinear && isOnTheSameSegment; //если вектора коллинеарны и точка
     }
 
-    private double allPointsOnTheSameLine(int axis, double[] A, double[] B, double[] P){
+    private double findNearestPointToP(int axis, double[] A, double[] B, double[] P){
         double[] maxPoint;
         double[] minPoint;
         if (A[axis] >= B[axis]) {
@@ -105,9 +105,12 @@ public class Test {
     }
 
 
-    public static double[] inputValidator(){
+    public static double[] inputValidator() throws IOException {
         double[] arr = new double[2]; // somePoint(x,y)
-        Scanner scanner = new Scanner(System.in);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        arr[x] = Double.parseDouble(reader.readLine());
+        arr[y] = Double.parseDouble(reader.readLine());
+/*        Scanner scanner = new Scanner(System.in);
         String wrongInput;
         while(true){
             System.out.print("x:");
@@ -119,10 +122,9 @@ public class Test {
                     break;
                 }
             }
-            wrongInput = scanner.nextLine();
+            wrongInput = scanner.next();
             System.out.println("Enter the number, please");
-        }
+        }*/
         return arr;
     }
 }
-
